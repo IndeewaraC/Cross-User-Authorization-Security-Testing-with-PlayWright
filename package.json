@@ -1,0 +1,23 @@
+{
+  "name": "cross-user-authorization-security-testing-with-playwright",
+  "version": "1.0.0",
+  "description": "This test suite validates the security boundary between different user accounts within the EventHub ecosystem. The primary objective is to ensure that a \"Gmail User\" cannot view or access a booking created by a \"Yahoo User,\" even if they possess the direct UUID/ID of that booking.",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IndeewaraC/Cross-User-Authorization-Security-Testing-with-PlayWright.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/IndeewaraC/Cross-User-Authorization-Security-Testing-with-PlayWright/issues"
+  },
+  "homepage": "https://github.com/IndeewaraC/Cross-User-Authorization-Security-Testing-with-PlayWright#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.5.0"
+  }
+}
