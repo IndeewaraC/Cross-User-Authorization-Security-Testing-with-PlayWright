@@ -1,43 +1,47 @@
-# Cross-User-Authorization-Security-Testing-with-PlayWright
-This test suite validates the security boundary between different user accounts within the EventHub ecosystem. The primary objective is to ensure that a "Gmail User" cannot view or access a booking created by a "Yahoo User," even if they possess the direct UUID/ID of that booking.
+# 🛡️ Cross-User Authorization Security Testing with Playwright
 
+[![Playwright Tests](https://github.com/IndeewaraC/Cross-User-Authorization-Security-Testing-with-PlayWright/actions/workflows/playwright.yml/badge.svg)](#) *(Note: Replace with your actual GitHub Actions badge link once configured)*
 
-The script utilizes a hybrid approach, leveraging Playwright's request object for fast data setup and the page object for end-to-end UI verification.
+## 💡 TL;DR & Business Value
+**The Problem:** Broken Object Level Authorization (BOLA) is a critical OWASP Top 10 vulnerability that can lead to massive data leaks if users can access other tenants' private data by simply changing a URL ID.
+**The Solution:** This hybrid API/UI test suite provides automated, continuous validation of the security boundary between different user accounts within the EventHub ecosystem. It ensures strict tenant data isolation, mitigating compliance risks and protecting sensitive user data.
 
-Phase 1: API-Driven Data Setup (The "Attacker's" Target)
-Headless Authentication: The script authenticates as a Yahoo User via POST /api/auth/login.
+---
 
-Resource Discovery: It queries the GET /api/events endpoint to dynamically retrieve a valid eventId, ensuring the test is not dependent on hardcoded data.
+## 🏗️ Architecture: The Hybrid Approach
+This script utilizes a hybrid testing approach. It leverages Playwright's `request` object for lightning-fast backend data setup, and the `page` object for end-to-end frontend UI verification.
 
-Resource Creation: A private booking is generated via POST /api/bookings. The resulting yahooBookingId is captured to serve as the target for the unauthorized access attempt.
+### Phase 1: API-Driven Data Setup (The "Attacker's" Target)
+* **Headless Authentication:** The script authenticates as a "Yahoo User" via `POST /api/auth/login`.
+* **Resource Discovery:** It queries the `GET /api/events` endpoint to dynamically retrieve a valid `eventId`, ensuring the test is robust and not dependent on hardcoded, stale data.
+* **Resource Creation:** A private booking is generated via `POST /api/bookings`. The resulting `yahooBookingId` is captured to serve as the target for the unauthorized access attempt.
 
-Phase 2: UI-Driven Authorization Bypass Attempt
-Identity Switch: The test transitions to the browser UI, logging in as a completely different user (Gmail User) using a reusable loginAs helper.
+### Phase 2: UI-Driven Authorization Bypass Attempt
+* **Identity Switch:** The test transitions to the browser UI, logging in as a completely different user ("Gmail User") using a reusable `loginAs` helper.
+* **Direct ID Infiltration:** The "Gmail User" attempts to bypass the standard UI navigation by jumping directly to the specific URL of the "Yahoo User’s" private booking: `BASE_URL/bookings/{yahooBookingId}`.
 
-Direct ID Infiltration: The Gmail User attempts to bypass the standard UI navigation by jumping directly to the specific URL of the Yahoo User’s booking: BASE_URL/bookings/{yahooBookingId}.
+### Phase 3: Security Assertions
+* **State Resolution:** The test utilizes `networkidle` to ensure all frontend authorization checks and backend API calls have fully settled.
+* **BOLA Validation:** The script asserts that the application successfully denies access at the route level, specifically verifying:
+  * The visibility of the "Access Denied" header.
+  * The precise error message: *"You are not authorized to view this booking."*
 
-Phase 3: Security Assertions
-State Resolution: The test utilizes networkidle to ensure all authorization checks and API calls have settled.
+---
 
-BOLA Validation: The script asserts that the application denies access, specifically looking for:
+## 🧠 Key Technical Concepts Demonstrated
+* **API Chaining:** Passing authentication tokens and dynamic IDs across multiple request calls to build complex testing states.
+* **Header Management:** Implementing `Authorization: Bearer <token>` for secure API communication.
+* **Multi-User Contexts:** Managing two distinct, isolated user identities within a single test execution.
+* **Route Guard Testing:** Verifying that frontend routes are strictly protected by backend authorization logic.
 
-The "Access Denied" header.
+---
 
-The error message: "You are not authorized to view this booking."
+## 🚀 Setup & Execution
 
-### Key Technical Concepts
-API Chaining: Passing tokens and IDs across multiple request calls to build a complex state.
+**1. Configuration**
+Ensure your `BASE_URL` and user credentials are configured in your constants or environment variables (`.env`). The test expects a `loginAs(page, user)` helper function to be available for UI-based login.
 
-Header Management: Implementing Authorization: Bearer <token> for secure API communication.
-
-Multi-User Contexts: Managing two distinct user identities within a single test execution.
-
-Route Guard Testing: Verifying that frontend routes are protected by backend authorization logic.
-
-### How to Run the Assignment
-Ensure your BASE_URL and user credentials are configured in the constants or environment variables.
-
-The test expects a loginAs(page, user) helper function to be available for UI-based login.
-
-Execute the test using:
-npx playwright test tests/security/authorization.spec.js
+**2. Install Dependencies**
+```bash
+npm install
+npx playwright install
